@@ -1,6 +1,6 @@
 --[[
-    Fluent UI Library (Windows 11 Style) - Version 2.0
-    Ref: Polished geometry, softer colors, and precise spacing.
+    Fluent UI Library (Windows 11 Style) - V3
+    Features: Modal Dialogs, Secondary Buttons, Refined Inputs, Sidebar Navigation
 ]]
 
 local FluentLibrary = {}
@@ -11,21 +11,23 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local CoreGui = game:GetService("CoreGui")
 
--- // WINDOWS 11 PALETTE (Softer Dark Mode) // --
+-- // THEME (Accurate to Modern Fluent UI) // --
 local Theme = {
-    Background = Color3.fromRGB(25, 25, 25), -- Deep, soft black
-    Sidebar = Color3.fromRGB(30, 30, 30), -- Slightly lighter
-    Card = Color3.fromRGB(40, 40, 40), -- Section Background (Lighter for contrast)
-    CardHover = Color3.fromRGB(50, 50, 50),
+    Background = Color3.fromRGB(32, 32, 32), -- Main Window BG
+    Sidebar = Color3.fromRGB(25, 25, 25), -- Darker Sidebar
+    Card = Color3.fromRGB(44, 44, 44), -- Surface / Card Background
+    CardHover = Color3.fromRGB(55, 55, 55),
     
-    Accent = Color3.fromRGB(0, 120, 212), -- Standard Win Blue
-    AccentHover = Color3.fromRGB(25, 140, 230),
+    Accent = Color3.fromRGB(0, 120, 212), -- Standard Blue
+    AccentHover = Color3.fromRGB(20, 140, 230),
+    AccentPress = Color3.fromRGB(0, 90, 170),
     
-    Text = Color3.fromRGB(243, 243, 243), -- Off-white
-    SubText = Color3.fromRGB(170, 170, 170),
+    Text = Color3.fromRGB(255, 255, 255),
+    SubText = Color3.fromRGB(180, 180, 180),
+    Placeholder = Color3.fromRGB(120, 120, 120),
     
-    Border = Color3.fromRGB(55, 55, 55), -- Very subtle border
-    InputBg = Color3.fromRGB(35, 35, 35), -- Darker background for inputs
+    Border = Color3.fromRGB(60, 60, 60), -- Subtle Grey Border
+    InputBorder = Color3.fromRGB(80, 80, 80), -- Lighter border for inputs
 }
 
 local function Create(instance, properties, children)
@@ -64,31 +66,32 @@ end
 
 -- // WINDOW // --
 function FluentLibrary:CreateWindow(title)
-    if CoreGui:FindFirstChild("FluentHub_V2") then CoreGui:FindFirstChild("FluentHub_V2"):Destroy() end
+    if CoreGui:FindFirstChild("FluentUI_V3") then CoreGui:FindFirstChild("FluentUI_V3"):Destroy() end
 
     local ScreenGui = Create("ScreenGui", {
-        Name = "FluentHub_V2",
+        Name = "FluentUI_V3",
         ResetOnSpawn = false,
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
         IgnoreGuiInset = true
     })
 
+    -- Main Window
     local MainFrame = Create("Frame", {
         Name = "Window",
         AnchorPoint = Vector2.new(0.5, 0.5),
         Position = UDim2.new(0.5, 0, 0.5, 0),
-        Size = UDim2.new(0, 720, 0, 480),
+        Size = UDim2.new(0, 800, 0, 500),
         BackgroundColor3 = Theme.Background,
         BorderSizePixel = 0,
         ClipsDescendants = true
     }, {
-        Create("UICorner", {CornerRadius = UDim.new(0, 8)}), -- Consistent Corner Radius
+        Create("UICorner", {CornerRadius = UDim.new(0, 8)}),
         Create("UIStroke", {Color = Theme.Border, Thickness = 1}),
         
         -- Sidebar
         Create("Frame", {
             Name = "Sidebar",
-            Size = UDim2.new(0, 200, 1, 0),
+            Size = UDim2.new(0, 220, 1, 0),
             BackgroundColor3 = Theme.Sidebar,
             BorderSizePixel = 0
         }, {
@@ -100,7 +103,7 @@ function FluentLibrary:CreateWindow(title)
                 BorderSizePixel = 0
             }),
             Create("UIPadding", {PaddingTop = UDim.new(0, 50)}),
-            Create("UIListLayout", {Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder})
+            Create("UIListLayout", {Padding = UDim.new(0, 2), SortOrder = Enum.SortOrder.LayoutOrder})
         }),
 
         -- Title Bar
@@ -113,10 +116,10 @@ function FluentLibrary:CreateWindow(title)
             Create("TextLabel", {
                 Size = UDim2.new(1, -100, 1, 0),
                 Position = UDim2.new(0, 15, 0, 0),
-                Text = "  " .. (title or "Windows 11"),
+                Text = "  " .. (title or "Task Manager"),
                 TextColor3 = Theme.Text,
                 Font = Enum.Font.GothamBold,
-                TextSize = 15,
+                TextSize = 14,
                 BackgroundTransparency = 1,
                 TextXAlignment = Enum.TextXAlignment.Left
             }),
@@ -136,8 +139,8 @@ function FluentLibrary:CreateWindow(title)
         -- Content
         Create("Frame", {
             Name = "ContentArea",
-            Position = UDim2.new(0, 200, 0, 38),
-            Size = UDim2.new(1, -200, 1, -38),
+            Position = UDim2.new(0, 220, 0, 38),
+            Size = UDim2.new(1, -220, 1, -38),
             BackgroundColor3 = Theme.Background,
             BackgroundTransparency = 1,
             BorderSizePixel = 0
@@ -146,13 +149,13 @@ function FluentLibrary:CreateWindow(title)
                 Name = "Container",
                 Size = UDim2.new(1, 0, 1, 0),
                 BackgroundTransparency = 1,
-                ScrollBarThickness = 4,
+                ScrollBarThickness = 6,
                 ScrollBarImageColor3 = Theme.Accent,
                 CanvasSize = UDim2.new(0, 0, 0, 0),
                 AutomaticCanvasSize = Enum.AutomaticSize.Y
             }, {
-                Create("UIPadding", {PaddingTop = UDim.new(0, 20), PaddingLeft = UDim.new(0, 25), PaddingRight = UDim.new(0, 25), PaddingBottom = UDim.new(0, 20)}),
-                Create("UIListLayout", {Padding = UDim.new(0, 16), SortOrder = Enum.SortOrder.LayoutOrder})
+                Create("UIPadding", {PaddingTop = UDim.new(0, 25), PaddingLeft = UDim.new(0, 30), PaddingRight = UDim.new(0, 30), PaddingBottom = UDim.new(0, 25)}),
+                Create("UIListLayout", {Padding = UDim.new(0, 20), SortOrder = Enum.SortOrder.LayoutOrder})
             })
         })
     })
@@ -162,6 +165,7 @@ function FluentLibrary:CreateWindow(title)
     
     MakeDraggable(MainFrame, MainFrame.TitleBar)
     
+    -- Close Logic
     local CloseBtn = MainFrame.TitleBar.Close
     CloseBtn.MouseEnter:Connect(function()
         TweenService:Create(CloseBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 70, 70), BackgroundTransparency = 0}):Play()
@@ -178,6 +182,84 @@ function FluentLibrary:CreateWindow(title)
         Container = MainFrame.ContentArea.Container,
         Tabs = {}
     }
+    
+    -- // MODAL SYSTEM (New Feature) // --
+    function WindowData:Modal(config)
+        -- Background Overlay
+        local Overlay = Create("Frame", {
+            Size = UDim2.new(1, 0, 1, 0),
+            BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+            BackgroundTransparency = 0.6,
+            ZIndex = 100,
+            Parent = ScreenGui
+        })
+        
+        -- Modal Box
+        local ModalFrame = Create("Frame", {
+            AnchorPoint = Vector2.new(0.5, 0.5),
+            Position = UDim2.new(0.5, 0, 0.5, 0),
+            Size = UDim2.new(0, 400, 0, 0), -- Auto Y
+            BackgroundColor3 = Theme.Card,
+            BorderSizePixel = 0,
+            ZIndex = 101,
+            Parent = Overlay
+        }, {
+            Create("UICorner", {CornerRadius = UDim.new(0, 8)}),
+            Create("UIStroke", {Color = Theme.Border}),
+            Create("UIPadding", {PaddingTop = UDim.new(0, 20), PaddingLeft = UDim.new(0, 20), PaddingRight = UDim.new(0, 20), PaddingBottom = UDim.new(0, 20)}),
+            Create("UIListLayout", {Padding = UDim.new(0, 15), SortOrder = Enum.SortOrder.LayoutOrder}),
+            -- Title
+            Create("TextLabel", {
+                Text = config.Title or "Dialog",
+                TextColor3 = Theme.Text, Font = Enum.Font.GothamBold, TextSize = 18,
+                Size = UDim2.new(1, 0, 0, 20),
+                BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left
+            }),
+            -- Content
+            Create("TextLabel", {
+                Text = config.Content or "Are you sure?",
+                TextColor3 = Theme.SubText, Font = Enum.Font.Gotham, TextSize = 14,
+                Size = UDim2.new(1, 0, 0, 40),
+                BackgroundTransparency = 1, TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left
+            }),
+            -- Buttons Container
+            Create("Frame", {
+                Name = "Btns",
+                Size = UDim2.new(1, 0, 0, 32),
+                BackgroundTransparency = 1
+            }, {
+                Create("UIListLayout", {Padding = UDim.new(0, 10), FillDirection = Enum.FillDirection.Horizontal, HorizontalAlignment = Enum.HorizontalAlignment.Right})
+            })
+        })
+        
+        -- Add Buttons
+        for _, btnData in pairs(config.Buttons or {}) do
+            local style = btnData.Style or "Secondary" -- Default to Secondary
+            local Btn = Create("TextButton", {
+                Size = UDim2.new(0, 100, 0, 32),
+                BackgroundColor3 = style == "Primary" and Theme.Accent or Theme.Background,
+                Text = btnData.Text or "OK",
+                TextColor3 = Theme.Text, Font = Enum.Font.GothamSemibold, TextSize = 14,
+                AutoButtonColor = false,
+                BackgroundTransparency = 0
+            }, {
+                Create("UICorner", {CornerRadius = UDim.new(0, 6)}),
+                Create("UIStroke", {Color = style == "Primary" and Theme.Accent or Theme.Border, Thickness = 1})
+            })
+            Btn.Parent = ModalFrame.Btns
+            
+            Btn.MouseButton1Click:Connect(function()
+                if btnData.Callback then btnData.Callback() end
+                TweenService:Create(ModalFrame, TweenInfo.new(0.2), {Size = UDim2.new(0, 400, 0, 0)}):Play()
+                TweenService:Create(Overlay, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+                task.wait(0.2)
+                Overlay:Destroy()
+            end)
+        end
+        
+        -- Animate In
+        TweenService:Create(ModalFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 400, 0, 180)}):Play()
+    end
 
     function WindowData:Notify(title, desc, duration)
         duration = duration or 5
@@ -283,10 +365,10 @@ function FluentLibrary:CreateSection(TabData, name)
         BorderSizePixel = 0,
         Parent = TabData.Page
     }, {
-        Create("UICorner", {CornerRadius = UDim.new(0, 6)}), -- Softer corners
+        Create("UICorner", {CornerRadius = UDim.new(0, 6)}),
         Create("UIStroke", {Color = Theme.Border, Thickness = 1}),
         Create("UIPadding", {PaddingTop = UDim.new(0, 35), PaddingLeft = UDim.new(0, 20), PaddingRight = UDim.new(0, 20), PaddingBottom = UDim.new(0, 15)}),
-        Create("UIListLayout", {Padding = UDim.new(0, 12)}), -- Better spacing
+        Create("UIListLayout", {Padding = UDim.new(0, 12)}),
         Create("TextLabel", {
             Size = UDim2.new(1, 0, 0, 20),
             Position = UDim2.new(0, 20, 0, 10),
@@ -302,26 +384,30 @@ end
 
 -- // ELEMENTS // --
 
--- Button (Accent Blue, Smooth Corners)
-function FluentLibrary:CreateButton(Parent, text, callback)
+-- Button (Supports Primary & Secondary)
+function FluentLibrary:CreateButton(Parent, text, style, callback)
+    -- style: "Primary" (Blue) or "Secondary" (Grey Border)
+    local isPrimary = style == "Primary" or style == nil
+    
     local Btn = Create("TextButton", {
         Size = UDim2.new(1, 0, 0, 36),
-        BackgroundColor3 = Theme.Accent,
-        Text = text, TextColor3 = Color3.fromRGB(255,255,255),
+        BackgroundColor3 = isPrimary and Theme.Accent or Theme.Background,
+        Text = text, TextColor3 = Theme.Text,
         Font = Enum.Font.GothamSemibold, TextSize = 14,
         AutoButtonColor = false,
         BackgroundTransparency = 0,
         Parent = Parent
     }, {
-        Create("UICorner", {CornerRadius = UDim.new(0, 6)}) -- Win11 Button radius
+        Create("UICorner", {CornerRadius = UDim.new(0, 6)}),
+        Create("UIStroke", {Color = isPrimary and Theme.Accent or Theme.InputBorder, Thickness = 1})
     })
     
-    Btn.MouseEnter:Connect(function() TweenService:Create(Btn, TweenInfo.new(0.15), {BackgroundColor3 = Theme.AccentHover}):Play() end)
-    Btn.MouseLeave:Connect(function() TweenService:Create(Btn, TweenInfo.new(0.15), {BackgroundColor3 = Theme.Accent}):Play() end)
+    Btn.MouseEnter:Connect(function() TweenService:Create(Btn, TweenInfo.new(0.15), {BackgroundColor3 = isPrimary and Theme.AccentHover or Theme.CardHover}):Play() end)
+    Btn.MouseLeave:Connect(function() TweenService:Create(Btn, TweenInfo.new(0.15), {BackgroundColor3 = isPrimary and Theme.Accent or Theme.Background}):Play() end)
     Btn.MouseButton1Click:Connect(function() if callback then callback() end end)
 end
 
--- Toggle (Pill Shape - Win11 Standard)
+-- Toggle (Pill)
 function FluentLibrary:CreateToggle(Parent, text, default, callback)
     local val = default or false
     local Frame = Create("Frame", {
@@ -339,17 +425,17 @@ function FluentLibrary:CreateToggle(Parent, text, default, callback)
             Name = "Switch",
             Size = UDim2.new(0, 44, 0, 22),
             Position = UDim2.new(1, -44, 0.5, -11),
-            BackgroundColor3 = Theme.Border, -- Darker grey when OFF
+            BackgroundColor3 = Theme.Border,
             AutoButtonColor = false,
             Text = "",
             Parent = Parent
         }, {
-            Create("UICorner", {CornerRadius = UDim.new(1, 0)}), -- Full Pill
+            Create("UICorner", {CornerRadius = UDim.new(1, 0)}),
             Create("Frame", {
                 Name = "Dot",
                 Size = UDim2.new(0, 16, 0, 16),
                 Position = UDim2.new(0, 3, 0.5, -8),
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255), -- Always white dot
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                 BorderSizePixel = 0
             }, {
                 Create("UICorner", {CornerRadius = UDim.new(1, 0)})
@@ -363,11 +449,9 @@ function FluentLibrary:CreateToggle(Parent, text, default, callback)
 
     local function Update()
         if val then
-            -- ON: Blue Background, Dot moves right
             TweenService:Create(Switch, TweenInfo.new(0.2), {BackgroundColor3 = Theme.Accent}):Play()
             TweenService:Create(Dot, TweenInfo.new(0.2), {Position = UDim2.new(1, -19, 0.5, -8)}):Play()
         else
-            -- OFF: Grey Background, Dot moves left
             TweenService:Create(Switch, TweenInfo.new(0.2), {BackgroundColor3 = Theme.Border}):Play()
             TweenService:Create(Dot, TweenInfo.new(0.2), {Position = UDim2.new(0, 3, 0.5, -8)}):Play()
         end
@@ -378,7 +462,7 @@ function FluentLibrary:CreateToggle(Parent, text, default, callback)
     Update()
 end
 
--- Slider (Clean thin track with Thumb)
+-- Slider
 function FluentLibrary:CreateSlider(Parent, text, min, max, default, callback)
     local val = default or min
     local Frame = Create("Frame", {
@@ -400,7 +484,7 @@ function FluentLibrary:CreateSlider(Parent, text, min, max, default, callback)
             Font = Enum.Font.GothamBold, TextSize = 14,
             BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Right
         }),
-        Create("Frame", { -- Track
+        Create("Frame", {
             Name = "Track",
             Position = UDim2.new(0, 0, 1, -18),
             Size = UDim2.new(1, 0, 0, 4),
@@ -408,7 +492,7 @@ function FluentLibrary:CreateSlider(Parent, text, min, max, default, callback)
             BorderSizePixel = 0
         }, {
             Create("UICorner", {CornerRadius = UDim.new(1, 0)}),
-            Create("Frame", { -- Fill
+            Create("Frame", {
                 Name = "Fill",
                 Size = UDim2.new((val-min)/(max-min), 0, 1, 0),
                 BackgroundColor3 = Theme.Accent,
@@ -450,7 +534,7 @@ function FluentLibrary:CreateSlider(Parent, text, min, max, default, callback)
     end)
 end
 
--- Dropdown (Overlay Style - Modern)
+-- Dropdown (Modal Style Dropdown)
 function FluentLibrary:CreateDropdown(Parent, text, list, default, callback)
     local val = default or list[1]
     local open = false
@@ -458,13 +542,13 @@ function FluentLibrary:CreateDropdown(Parent, text, list, default, callback)
         Size = UDim2.new(1, 0, 0, 36),
         BackgroundTransparency = 1,
         Parent = Parent,
-        ClipsDescendants = false, -- Allow overflow for dropdown
+        ClipsDescendants = false,
         ZIndex = 10
     }, {
         Create("TextButton", {
             Name = "Main",
             Size = UDim2.new(1, 0, 0, 36),
-            BackgroundColor3 = Theme.InputBg,
+            BackgroundColor3 = Theme.Background,
             Text = "  "..text..": "..val,
             TextColor3 = Theme.Text, Font = Enum.Font.Gotham, TextSize = 14,
             TextXAlignment = Enum.TextXAlignment.Left,
@@ -472,11 +556,11 @@ function FluentLibrary:CreateDropdown(Parent, text, list, default, callback)
             ZIndex = 10
         }, {
             Create("UICorner", {CornerRadius = UDim.new(0, 6)}),
-            Create("UIStroke", {Color = Theme.Border}),
+            Create("UIStroke", {Color = Theme.InputBorder}),
             Create("TextLabel", {
                 Text = "▾", Size = UDim2.new(0, 20, 1, 0),
                 Position = UDim2.new(1, -25, 0, 0),
-                TextColor3 = Theme.SubText, BackgroundTransparency = 1, TextSize = 12
+                TextColor3 = Theme.SubText, BackgroundTransparency = 1, TextSize = 14
             })
         }),
         Create("Frame", {
@@ -489,12 +573,11 @@ function FluentLibrary:CreateDropdown(Parent, text, list, default, callback)
             ZIndex = 15
         }, {
             Create("UICorner", {CornerRadius = UDim.new(0, 6)}),
-            Create("UIStroke", {Color = Theme.Border}),
+            Create("UIStroke", {Color = Theme.InputBorder}),
             Create("UIListLayout", {Padding = UDim.new(0, 2)})
         })
     })
     
-    -- Fix ZIndex propagation
     Frame.List.ZIndex = 15
     Frame.Main.ZIndex = 10
 
@@ -527,7 +610,7 @@ function FluentLibrary:CreateDropdown(Parent, text, list, default, callback)
     end
 end
 
--- Input (Rounded, Darker input area)
+-- Input
 function FluentLibrary:CreateInput(Parent, text, placeholder, callback)
     local Frame = Create("Frame", {
         Size = UDim2.new(1, 0, 0, 50),
@@ -545,28 +628,15 @@ function FluentLibrary:CreateInput(Parent, text, placeholder, callback)
             PlaceholderText = placeholder or "...",
             Text = "", TextColor3 = Theme.Text,
             Font = Enum.Font.Gotham, TextSize = 14,
-            PlaceholderColor3 = Theme.SubText,
-            BackgroundColor3 = Theme.InputBg,
+            PlaceholderColor3 = Theme.Placeholder,
+            BackgroundColor3 = Theme.Background,
             BorderSizePixel = 0
         }, {
             Create("UICorner", {CornerRadius = UDim.new(0, 6)}),
-            Create("UIStroke", {Color = Theme.Border})
+            Create("UIStroke", {Color = Theme.InputBorder})
         })
     })
     Frame.TextBox.FocusLost:Connect(function() if callback then callback(Frame.TextBox.Text) end end)
-end
-
--- Paragraph
-function FluentLibrary:CreateParagraph(Parent, text)
-    return Create("TextLabel", {
-        Size = UDim2.new(1, 0, 0, 0),
-        AutomaticSize = Enum.AutomaticSize.Y,
-        Text = text, TextColor3 = Theme.SubText,
-        Font = Enum.Font.Gotham, TextSize = 14,
-        BackgroundTransparency = 1, TextWrapped = true,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = Parent
-    })
 end
 
 return FluentLibrary
