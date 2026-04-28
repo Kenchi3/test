@@ -133,4 +133,4 @@ function Tab.AddDropdown(Options)
     return Dropdown
 end
 
-return Kenchi
+return Kenchis
